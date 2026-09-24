@@ -13,15 +13,25 @@ const emptyCollage = document.querySelector("#emptyCollage");
 const collage = document.querySelector("#collage");
 const messageCount = document.querySelector("#messageCount");
 const tvMessages = document.querySelector("#tvMessages");
+const tvCollage = document.querySelector("#tvCollage");
+const tvCollageEmpty = document.querySelector("#tvCollageEmpty");
+const tvPhotoCount = document.querySelector("#tvPhotoCount");
 const qrDialog = document.querySelector("#qrDialog");
 const qrImage = document.querySelector("#qrImage");
 const lightbox = document.querySelector("#lightbox");
 let lastPayload = "";
+let currentMessages = [];
+let tvPage = 0;
 const isGuestView = document.documentElement.dataset.view === "guest";
-const participationUrl = `${location.origin}/participar`;
+let participationUrl = "https://purepo.jdcalderin.workers.dev/?modo=participar";
 
-document.querySelector("#displayQrImage").src = `https://api.qrserver.com/v1/create-qr-code/?size=700x700&color=32134b&bgcolor=ffffff&margin=12&data=${encodeURIComponent(participationUrl)}`;
 if (isGuestView) document.title = "Deja un mensaje para Pau";
+
+function setQrSources() {
+  const source = `https://api.qrserver.com/v1/create-qr-code/?size=700x700&color=32134b&bgcolor=ffffff&margin=12&data=${encodeURIComponent(participationUrl)}`;
+  document.querySelector("#displayQrImage").src = source;
+  qrImage.src = source;
+}
 
 function formatDate(value) {
   return new Intl.DateTimeFormat("es-CO", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }).format(new Date(value));
@@ -32,9 +42,9 @@ function initials(name) {
 }
 
 function renderMessages(messages) {
+  currentMessages = messages;
   messageWall.replaceChildren();
   collage.replaceChildren();
-  tvMessages.replaceChildren();
   messageCount.textContent = String(messages.length);
   emptyMessages.hidden = messages.length > 0;
 
@@ -63,13 +73,27 @@ function renderMessages(messages) {
     }
   }
 
+  renderTvStage(messages);
+
+  emptyCollage.hidden = messages.some((item) => item.photoUrl);
+}
+
+function renderTvStage(messages) {
+  tvMessages.replaceChildren();
+  tvCollage.replaceChildren();
+  const photos = messages.filter((item) => item.photoUrl);
+  tvPhotoCount.textContent = `${photos.length} ${photos.length === 1 ? "foto" : "fotos"}`;
+  tvCollageEmpty.hidden = photos.length > 0;
+
   if (messages.length === 0) {
     const empty = document.createElement("p");
     empty.className = "tv-empty";
     empty.textContent = "El primer mensaje puede ser el tuyo ✦";
     tvMessages.append(empty);
   } else {
-    for (const item of messages.slice(0, 2)) {
+    const start = (tvPage * 3) % messages.length;
+    const visibleMessages = Array.from({ length: Math.min(3, messages.length) }, (_, index) => messages[(start + index) % messages.length]);
+    for (const item of visibleMessages) {
       const card = document.createElement("article");
       card.className = "tv-message";
       const text = document.createElement("p");
@@ -81,7 +105,22 @@ function renderMessages(messages) {
     }
   }
 
-  emptyCollage.hidden = messages.some((item) => item.photoUrl);
+  if (photos.length) {
+    const start = (tvPage * 6) % photos.length;
+    const visiblePhotos = Array.from({ length: Math.min(6, photos.length) }, (_, index) => photos[(start + index) % photos.length]);
+    for (const item of visiblePhotos) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "tv-collage-item";
+      button.setAttribute("aria-label", `Ver foto compartida por ${item.author}`);
+      const image = document.createElement("img");
+      image.src = item.photoUrl;
+      image.alt = `Recuerdo compartido por ${item.author}`;
+      button.append(image);
+      button.addEventListener("click", () => openLightbox(item));
+      tvCollage.append(button);
+    }
+  }
 }
 
 async function loadMessages({ quiet = false } = {}) {
@@ -153,7 +192,6 @@ form.addEventListener("submit", async (event) => {
 });
 
 document.querySelector("#openQr").addEventListener("click", () => {
-  qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&color=32134b&bgcolor=ffffff&margin=12&data=${encodeURIComponent(participationUrl)}`;
   qrDialog.showModal();
 });
 document.querySelector("#closeQr").addEventListener("click", () => qrDialog.close());
@@ -177,10 +215,20 @@ async function loadConfig() {
     document.querySelector("#eyebrow").textContent = config.eyebrow;
     document.querySelector("#description").textContent = config.description;
     document.querySelector("#heroImage").src = config.heroImage;
+    document.querySelector("#tvHeroImage").src = config.heroImage;
+    document.querySelector("#tvBirthdayName").textContent = config.name;
+    if (config.publicUrl) participationUrl = new URL("?modo=participar", config.publicUrl).href;
   } catch {
     // The embedded defaults keep the page usable if configuration is unavailable.
   }
+  setQrSources();
 }
 
 await Promise.all([loadConfig(), loadMessages()]);
-setInterval(() => loadMessages({ quiet: true }), 8000);
+setInterval(() => {
+  loadMessages({ quiet: true });
+  if (!isGuestView && currentMessages.length) {
+    tvPage += 1;
+    renderTvStage(currentMessages);
+  }
+}, 8000);

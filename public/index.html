@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#32134b" />
     <meta name="description" content="Mural de cumpleaños de Pau: mensajes, recuerdos y fotos de quienes la quieren." />
     <title>Para Pau, con cariño</title>
-    <script>document.documentElement.dataset.view = location.pathname.startsWith('/participar') ? 'guest' : 'display';</script>
+    <script>document.documentElement.dataset.view = location.pathname.startsWith('/participar') || new URLSearchParams(location.search).get('modo') === 'participar' ? 'guest' : 'display';</script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
@@ -34,6 +34,26 @@
       </div>
     </aside>
 
+    <section class="tv-stage" aria-label="Mural en vivo para televisión">
+      <article class="tv-celebration">
+        <p class="eyebrow">Hoy celebramos</p>
+        <div class="tv-portrait"><img id="tvHeroImage" src="/images/pau.jpeg" alt="Pau, la cumpleañera" /></div>
+        <h1>¡Feliz cumple, <em id="tvBirthdayName">Pau</em>!</h1>
+        <p>Todo este cariño es para ti.</p>
+      </article>
+
+      <article class="tv-panel tv-messages-panel">
+        <div class="tv-panel-heading"><div><span class="eyebrow dark">Palabras para Pau</span><h2>Mensajes en vivo</h2></div><span class="tv-live">En vivo</span></div>
+        <div id="tvMessages" class="tv-messages"></div>
+      </article>
+
+      <article class="tv-panel tv-collage-panel">
+        <div class="tv-panel-heading"><div><span class="eyebrow">Recuerdos compartidos</span><h2>El collage</h2></div><span class="tv-photo-count" id="tvPhotoCount">0 fotos</span></div>
+        <div id="tvCollage" class="tv-collage"></div>
+        <p class="tv-collage-empty" id="tvCollageEmpty">Las fotos que lleguen aparecerán aquí ✦</p>
+      </article>
+    </section>
+
     <main id="inicio">
       <section class="hero shell">
         <div class="portrait-wrap">
@@ -47,11 +67,6 @@
           <p class="eyebrow" id="eyebrow">Hoy celebramos tu vida</p>
           <h1>¡Feliz vuelta al sol, <em id="birthdayName">Pau</em>!</h1>
           <p class="intro" id="description">Déjale a Pau unas palabras bonitas y, si quieres, comparte una foto para sumar a este recuerdo.</p>
-
-          <section class="tv-highlights" aria-label="Últimos mensajes">
-            <div class="tv-highlights-heading"><span>Últimos mensajes</span><span class="tv-live">En vivo</span></div>
-            <div id="tvMessages" class="tv-messages"></div>
-          </section>
 
           <form id="messageForm" class="message-form" enctype="multipart/form-data">
             <div class="form-heading">
