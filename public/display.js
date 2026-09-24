@@ -9,6 +9,34 @@
   var lastPayload = "";
   var page = 0;
   var cacheKey = "mural-pau-last-messages-v1";
+  var knownMessageIds = {};
+  var receivedFirstResponse = false;
+  var notificationSound = document.createElement("audio");
+  notificationSound.src = "/sounds/new-message.wav";
+  notificationSound.preload = "auto";
+  var emojiIcons = {
+    "❤": "heart", "❤️": "heart", "♥": "heart", "💕": "heart", "💖": "heart", "💗": "heart", "💓": "heart", "💝": "heart",
+    "🎉": "party", "🥳": "party", "🎂": "cake", "✨": "sparkles", "⭐": "sparkles", "🌟": "sparkles",
+    "😊": "smile", "🙂": "smile", "😀": "smile", "😃": "smile", "😄": "smile", "😁": "smile", "😂": "smile", "🤣": "smile",
+    "😍": "love", "🥰": "love", "👏": "clap", "🙌": "clap", "🔥": "fire"
+  };
+  var emojiPattern = /(❤️|❤|♥|💕|💖|💗|💓|💝|🎉|🥳|🎂|✨|⭐|🌟|😊|🙂|😀|😃|😄|😁|😂|🤣|😍|🥰|👏|🙌|🔥)/g;
+
+  function rememberMessages(items) {
+    var i;
+    for (i = 0; i < items.length; i += 1) knownMessageIds[items[i].id] = true;
+  }
+
+  function playNotification() {
+    var attempt;
+    try {
+      notificationSound.currentTime = 0;
+      attempt = notificationSound.play();
+      if (attempt && attempt.catch) attempt.catch(function () {});
+    } catch (ignore) {
+      // Algunos televisores bloquean audio automático; el mural continúa funcionando.
+    }
+  }
 
   function clear(node) {
     while (node.firstChild) node.removeChild(node.firstChild);
@@ -18,13 +46,34 @@
     node.appendChild(document.createTextNode(value));
   }
 
+  function richText(node, value) {
+    var source = String(value);
+    var cursor = 0;
+    source.replace(emojiPattern, function (match, index) {
+      var image;
+      if (index > cursor) text(node, source.slice(cursor, index));
+      image = document.createElement("img");
+      image.className = "emoji-icon";
+      image.src = "/images/emojis/" + emojiIcons[match] + ".svg";
+      image.alt = match;
+      image.setAttribute("aria-label", match);
+      node.appendChild(image);
+      cursor = index + match.length;
+      return match;
+    });
+    if (cursor < source.length) text(node, source.slice(cursor));
+  }
+
   function addMessage(item) {
     var card = document.createElement("article");
     var body = document.createElement("p");
     var author = document.createElement("strong");
     card.className = "tv-message";
-    text(body, "“" + item.message + "”");
-    text(author, "— " + item.author);
+    text(body, "“");
+    richText(body, item.message);
+    text(body, "”");
+    text(author, "— ");
+    richText(author, item.author);
     card.appendChild(body);
     card.appendChild(author);
     messagesNode.appendChild(card);
@@ -87,6 +136,7 @@
         return;
       }
       lastPayload = saved;
+      rememberMessages(messages);
       render();
     } catch (ignore) {
       messages = [];
@@ -113,11 +163,19 @@
         if (payload !== lastPayload) {
           var received = JSON.parse(payload);
           // Si hay una respuesta temporalmente vacía, no borra el mural ya visible.
+          var hasNewMessage = false;
+          var i;
           if (!received.length && messages.length) return;
+          for (i = 0; i < received.length; i += 1) {
+            if (!knownMessageIds[received[i].id]) hasNewMessage = true;
+          }
           messages = received;
           lastPayload = payload;
+          rememberMessages(received);
           saveMural(payload);
           render();
+          if (receivedFirstResponse && hasNewMessage) playNotification();
+          receivedFirstResponse = true;
         }
       } catch (ignore) {
         // Conserva lo ya mostrado si una respuesta no se puede interpretar.

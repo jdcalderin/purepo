@@ -81,10 +81,12 @@ html[data-view="display"] .tv-stage {
 .tv-collage-panel .eyebrow, .tv-collage-panel h2 { color: white; }
 .tv-photo-count { color: rgba(255,255,255,.65); white-space: nowrap; font-size: .72rem; font-weight: 700; }
 .tv-messages { height: calc(100% - 66px); display: grid; grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.tv-message, .tv-empty { min-height: 0; display: flex; flex-direction: column; justify-content: center; padding: clamp(13px, 1.5vw, 21px); border: 0; border-radius: 6px 18px 18px 18px; background: rgba(255,255,255,.9); box-shadow: 0 9px 24px rgba(50,19,75,.08); animation: message-arrive .55s both; }
-.tv-message p { font-family: "Caveat", "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Arial Unicode MS", cursive; font-size: clamp(1.22rem, 2vw, 1.8rem); font-weight: 600; line-height: 1.14; -webkit-line-clamp: 3; }
+.tv-message, .tv-empty { min-height: 0; display: flex; flex-direction: column; justify-content: center; padding: clamp(13px, 1.5vw, 21px); border: 0; border-radius: 6px 18px 18px 18px; background: #fff; color: #32134b; opacity: 1; box-shadow: 0 9px 24px rgba(50,19,75,.08); animation: none; }
+.tv-message p { color: #32134b; font-family: "Caveat", "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", "Arial Unicode MS", cursive; font-size: clamp(1.22rem, 2vw, 1.8rem); font-weight: 700; line-height: 1.14; -webkit-line-clamp: 3; }
+.tv-message strong { color: #6b1743; font-weight: 800; }
+.emoji-icon { display: inline-block; width: 1em; height: 1em; margin: 0 .06em; vertical-align: -.14em; }
 .tv-collage { height: calc(100% - 66px); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 9px; }
-.tv-collage-item { min-width: 0; min-height: 0; padding: 0; border: 0; border-radius: 13px; overflow: hidden; background: #401d5b; cursor: zoom-in; animation: photo-reveal .65s both; }
+.tv-collage-item { min-width: 0; min-height: 0; padding: 0; border: 0; border-radius: 13px; overflow: hidden; background: #401d5b; opacity: 1; cursor: zoom-in; animation: none; }
 .tv-collage-item:nth-child(2) { animation-delay: .08s; }
 .tv-collage-item:nth-child(3) { animation-delay: .16s; }
 .tv-collage-item:nth-child(4) { animation-delay: .24s; }
