@@ -53,6 +53,11 @@
     var foundAt;
     var foundEmoji;
     var i;
+    var copy = document.createElement("span");
+    var tray = document.createElement("span");
+    var hasEmoji = false;
+    copy.className = "message-copy";
+    tray.className = "emoji-tray";
 
     while (cursor < source.length) {
       foundAt = -1;
@@ -65,19 +70,22 @@
         }
       }
       if (foundAt === -1) {
-        text(node, source.slice(cursor));
-        return;
+        text(copy, source.slice(cursor));
+        break;
       }
-      if (foundAt > cursor) text(node, source.slice(cursor, foundAt));
+      if (foundAt > cursor) text(copy, source.slice(cursor, foundAt));
       var image;
       image = document.createElement("img");
       image.className = "emoji-icon";
       image.src = "/images/emojis/" + emojiIcons[foundEmoji] + ".svg";
       image.alt = foundEmoji;
       image.setAttribute("aria-label", foundEmoji);
-      node.appendChild(image);
+      tray.appendChild(image);
+      hasEmoji = true;
       cursor = foundAt + foundEmoji.length;
     }
+    node.appendChild(copy);
+    if (hasEmoji) node.appendChild(tray);
   }
 
   function addMessage(item) {
@@ -85,11 +93,8 @@
     var body = document.createElement("p");
     var author = document.createElement("strong");
     card.className = "tv-message";
-    text(body, "“");
-    richText(body, item.message);
-    text(body, "”");
-    text(author, "— ");
-    richText(author, item.author);
+    richText(body, "“" + item.message + "”");
+    richText(author, "— " + item.author);
     card.appendChild(body);
     card.appendChild(author);
     messagesNode.appendChild(card);
