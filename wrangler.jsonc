@@ -1,0 +1,24 @@
+{
+  "$schema": "https://unpkg.com/wrangler@latest/config-schema.json",
+  "name": "purepo",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-24",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "MESSAGES",
+      "id": "34a60d24ef964fb3b6358257fe2f9900"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "PHOTOS",
+      "bucket_name": "purepo-photos"
+    }
+  ]
+}
