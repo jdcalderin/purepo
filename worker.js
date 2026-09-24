@@ -16,6 +16,14 @@ function json(payload, status = 200) {
   });
 }
 
+function withoutCache(response) {
+  const headers = new Headers(response.headers);
+  headers.set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+  headers.set("Pragma", "no-cache");
+  headers.set("Expires", "0");
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+}
+
 async function readMessages(env) {
   return (await env.MESSAGES.get("messages", "json")) || [];
 }
@@ -84,7 +92,9 @@ export default {
       if (request.method === "GET" && url.pathname.startsWith("/api/photos/")) {
         return handlePhoto(request, env, url.pathname);
       }
-      return env.ASSETS.fetch(request);
+      // Los televisores WebOS suelen conservar el HTML y JavaScript aun al recargar.
+      // Forzamos una versión fresca para que el mural siempre consulte los recuerdos nuevos.
+      return withoutCache(await env.ASSETS.fetch(request));
     } catch (error) {
       console.error("Mural request failed", error);
       return json({ error: "No pudimos guardar el recuerdo. Intenta de nuevo." }, 500);

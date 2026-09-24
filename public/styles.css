@@ -44,7 +44,7 @@ html[data-view="display"] .display-qr {
   text-align: center;
 }
 .display-qr-code { padding: 5px; background: white; border-radius: 12px; }
-.display-qr-code img { width: 100%; aspect-ratio: 1; }
+.display-qr-code img { display: block; width: 100%; aspect-ratio: 1; image-rendering: pixelated; }
 .display-qr span { display: block; margin-top: 7px; color: var(--pink); text-transform: uppercase; letter-spacing: .1em; font-size: .66rem; font-weight: 800; }
 .display-qr strong { display: block; color: var(--plum); font-family: "Fraunces", serif; font-size: 1rem; line-height: 1.12; }
 .qr-fallback { display: block; margin-top: 7px; color: var(--plum); font-size: .66rem; font-weight: 700; overflow-wrap: anywhere; }

@@ -132,7 +132,10 @@ function renderTvStage(messages) {
 
 async function loadMessages({ quiet = false } = {}) {
   try {
-    const response = await fetch("/api/messages", { cache: "no-store" });
+    const response = await fetch(`/api/messages?updated=${Date.now()}`, {
+      cache: "no-store",
+      headers: { "Cache-Control": "no-cache", Pragma: "no-cache" }
+    });
     if (!response.ok) throw new Error("No se pudo cargar el mural.");
     const messages = await response.json();
     const payload = JSON.stringify(messages);
@@ -224,7 +227,10 @@ document.body.addEventListener("animationend", (event) => {
 
 async function loadConfig() {
   try {
-    const config = await fetch("/config.json").then((response) => response.json());
+    const config = await fetch(`/config.json?updated=${Date.now()}`, {
+      cache: "no-store",
+      headers: { "Cache-Control": "no-cache" }
+    }).then((response) => response.json());
     document.querySelector("#birthdayName").textContent = config.name;
     document.querySelector("#eyebrow").textContent = config.eyebrow;
     document.querySelector("#description").textContent = config.description;
