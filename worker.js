@@ -38,6 +38,21 @@ function publicMessage(message) {
   };
 }
 
+function describeOrigin(request, originId) {
+  const agent = request.headers.get("user-agent") || "";
+  const lower = agent.toLowerCase();
+  const deviceType = /webos|smart-tv|smarttv|hbbtv|tizen/.test(lower) ? "tv"
+    : /ipad|tablet/.test(lower) || (/android/.test(lower) && !/mobile/.test(lower)) ? "tablet"
+    : /iphone|ipod|mobile|android/.test(lower) ? "movil" : "computador";
+  const platform = /webos/.test(lower) ? "webOS" : /android/.test(lower) ? "Android"
+    : /iphone|ipad|ipod/.test(lower) ? "iOS" : /windows/.test(lower) ? "Windows"
+    : /mac os|macintosh/.test(lower) ? "macOS" : /linux/.test(lower) ? "Linux" : "desconocido";
+  const browser = /edg\//.test(lower) ? "Edge" : /firefox\//.test(lower) ? "Firefox"
+    : /samsungbrowser\//.test(lower) ? "Samsung Internet" : /chrome\//.test(lower) ? "Chrome"
+    : /safari\//.test(lower) ? "Safari" : "navegador desconocido";
+  return { id: originId || null, deviceType, platform, browser };
+}
+
 async function handleCreateMessage(request, env) {
   const form = await request.formData();
   const author = String(form.get("author") || "").trim();
@@ -71,8 +86,8 @@ async function handleCreateMessage(request, env) {
     author,
     message: messageText,
     photoUrl,
-    // Identificador aleatorio del navegador; no contiene teléfono ni nombre del equipo.
-    originId: originId || null,
+    // Identificador aleatorio y datos aproximados, sin teléfono, IP ni nombre del equipo.
+    origin: describeOrigin(request, originId),
     createdAt: new Date().toISOString()
   };
 
