@@ -20,7 +20,7 @@
     "😊": "smile", "🙂": "smile", "😀": "smile", "😃": "smile", "😄": "smile", "😁": "smile", "😂": "smile", "🤣": "smile",
     "😍": "love", "🥰": "love", "👏": "clap", "🙌": "clap", "🔥": "fire"
   };
-  var emojiPattern = /(❤️|❤|♥|💕|💖|💗|💓|💝|🎉|🥳|🎂|✨|⭐|🌟|😊|🙂|😀|😃|😄|😁|😂|🤣|😍|🥰|👏|🙌|🔥)/g;
+  var emojiMatches = ["❤️", "❤", "♥", "💕", "💖", "💗", "💓", "💝", "🎉", "🥳", "🎂", "✨", "⭐", "🌟", "😊", "🙂", "😀", "😃", "😄", "😁", "😂", "🤣", "😍", "🥰", "👏", "🙌", "🔥"];
 
   function rememberMessages(items) {
     var i;
@@ -49,19 +49,35 @@
   function richText(node, value) {
     var source = String(value);
     var cursor = 0;
-    source.replace(emojiPattern, function (match, index) {
+    var candidate;
+    var foundAt;
+    var foundEmoji;
+    var i;
+
+    while (cursor < source.length) {
+      foundAt = -1;
+      foundEmoji = "";
+      for (i = 0; i < emojiMatches.length; i += 1) {
+        candidate = source.indexOf(emojiMatches[i], cursor);
+        if (candidate !== -1 && (foundAt === -1 || candidate < foundAt)) {
+          foundAt = candidate;
+          foundEmoji = emojiMatches[i];
+        }
+      }
+      if (foundAt === -1) {
+        text(node, source.slice(cursor));
+        return;
+      }
+      if (foundAt > cursor) text(node, source.slice(cursor, foundAt));
       var image;
-      if (index > cursor) text(node, source.slice(cursor, index));
       image = document.createElement("img");
       image.className = "emoji-icon";
-      image.src = "/images/emojis/" + emojiIcons[match] + ".svg";
-      image.alt = match;
-      image.setAttribute("aria-label", match);
+      image.src = "/images/emojis/" + emojiIcons[foundEmoji] + ".svg";
+      image.alt = foundEmoji;
+      image.setAttribute("aria-label", foundEmoji);
       node.appendChild(image);
-      cursor = index + match.length;
-      return match;
-    });
-    if (cursor < source.length) text(node, source.slice(cursor));
+      cursor = foundAt + foundEmoji.length;
+    }
   }
 
   function addMessage(item) {
