@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#32134b" />
+    <meta name="description" content="Mural de cumpleaños de Pau: mensajes, recuerdos y fotos de quienes la quieren." />
+    <title>Para Pau, con cariño</title>
+    <script>document.documentElement.dataset.view = location.pathname.startsWith('/participar') ? 'guest' : 'display';</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23ed3f76'/%3E%3Cpath d='M32 51S11 39 11 24c0-9 11-13 21-3 10-10 21-6 21 3 0 15-21 27-21 27Z' fill='white'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="confetti" aria-hidden="true"></div>
+    <header class="topbar">
+      <a class="brand" href="#inicio" aria-label="Ir al inicio">
+        <span class="brand-mark">P</span>
+        <span>El cumple de <strong>Pau</strong></span>
+      </a>
+      <button class="qr-button" id="openQr" type="button" aria-haspopup="dialog">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm9-2h3v3h-3v-3Zm4 0h3v3h-3v-3Zm-4 4h3v3h-3v-3Zm4 1h3v2h-3v-2Z"/></svg>
+        Compartir QR
+      </button>
+    </header>
+
+    <aside class="display-qr" aria-label="Código QR para participar">
+      <div class="display-qr-code"><img id="displayQrImage" alt="Código QR para dejar un mensaje a Pau" /></div>
+      <div>
+        <span>Escanea con tu celular</span>
+        <strong>Déjale algo bonito a Pau</strong>
+      </div>
+    </aside>
+
+    <main id="inicio">
+      <section class="hero shell">
+        <div class="portrait-wrap">
+          <div class="portrait-frame">
+            <img id="heroImage" src="/images/pau.jpeg" alt="Pau, la cumpleañera" />
+          </div>
+          <span class="portrait-note">Nuestra persona favorita ✦</span>
+        </div>
+
+        <div class="hero-copy">
+          <p class="eyebrow" id="eyebrow">Hoy celebramos tu vida</p>
+          <h1>¡Feliz vuelta al sol, <em id="birthdayName">Pau</em>!</h1>
+          <p class="intro" id="description">Déjale a Pau unas palabras bonitas y, si quieres, comparte una foto para sumar a este recuerdo.</p>
+
+          <section class="tv-highlights" aria-label="Últimos mensajes">
+            <div class="tv-highlights-heading"><span>Últimos mensajes</span><span class="tv-live">En vivo</span></div>
+            <div id="tvMessages" class="tv-messages"></div>
+          </section>
+
+          <form id="messageForm" class="message-form" enctype="multipart/form-data">
+            <div class="form-heading">
+              <div>
+                <span class="step-number">01</span>
+                <h2>Deja tu mensaje</h2>
+              </div>
+              <span class="optional">La foto es opcional</span>
+            </div>
+
+            <label for="author">Tu nombre</label>
+            <input id="author" name="author" type="text" maxlength="50" placeholder="¿Quién firma este recuerdo?" required autocomplete="name" />
+
+            <label for="message">Tu mensaje para Pau</label>
+            <textarea id="message" name="message" maxlength="600" rows="4" placeholder="Escribe desde el corazón…" required></textarea>
+            <div class="field-meta"><span>Hazlo tan tú como quieras</span><span id="charCount">0 / 600</span></div>
+
+            <div class="form-actions">
+              <label class="photo-picker" for="photo">
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5h3l1.2-2h7.6L17 5h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm8 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 2.2a2.8 2.8 0 1 1 0 5.6 2.8 2.8 0 0 1 0-5.6Z"/></svg>
+                <span id="photoLabel">Sumar una foto</span>
+                <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+              </label>
+              <button class="send-button" type="submit">
+                <span>Enviar cariño</span><span aria-hidden="true">↗</span>
+              </button>
+            </div>
+            <div id="photoPreview" class="photo-preview" hidden></div>
+            <p id="formStatus" class="form-status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+
+      <section class="board-section" id="mural">
+        <div class="shell section-heading">
+          <div>
+            <p class="eyebrow dark">Hecho por quienes te quieren</p>
+            <h2>El mural de Pau</h2>
+          </div>
+          <div class="live-count"><span></span><strong id="messageCount">0</strong> recuerdos reunidos</div>
+        </div>
+        <div class="shell">
+          <div id="messages" class="message-wall" aria-live="polite"></div>
+          <div id="emptyMessages" class="empty-state">
+            <span>✦</span>
+            <h3>Este mural está listo para su primer recuerdo</h3>
+            <p>Escribe arriba algo bonito para Pau.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="collage-section" id="fotos">
+        <div class="shell section-heading light">
+          <div>
+            <p class="eyebrow">Momentos que se quedan</p>
+            <h2>Nuestro collage</h2>
+          </div>
+          <p>Las fotos que compartan aquí harán crecer este rincón.</p>
+        </div>
+        <div class="shell">
+          <div id="collage" class="collage"></div>
+          <div id="emptyCollage" class="empty-collage">La próxima foto puede ser la tuya <span>♡</span></div>
+        </div>
+      </section>
+    </main>
+
+    <footer><span>Hecho con mucho cariño para Pau</span><span>Un recuerdo que sigue creciendo ✦</span></footer>
+
+    <dialog id="qrDialog" class="qr-dialog">
+      <button id="closeQr" class="dialog-close" aria-label="Cerrar">×</button>
+      <p class="eyebrow dark">Súmate al recuerdo</p>
+      <h2>Escanea y escribe algo bonito</h2>
+      <div class="qr-frame"><img id="qrImage" alt="Código QR para abrir el mural" /></div>
+      <p>Abre la cámara de tu celular y apunta al código.</p>
+      <button id="copyLink" class="copy-button" type="button">Copiar enlace</button>
+    </dialog>
+
+    <dialog id="lightbox" class="lightbox">
+      <button id="closeLightbox" class="dialog-close light" aria-label="Cerrar foto">×</button>
+      <img id="lightboxImage" alt="" />
+      <p id="lightboxCaption"></p>
+    </dialog>
+
+    <template id="messageTemplate">
+      <article class="message-card">
+        <div class="quote">“</div>
+        <p class="card-message"></p>
+        <div class="card-footer"><span class="card-avatar"></span><div><strong class="card-author"></strong><time></time></div></div>
+      </article>
+    </template>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

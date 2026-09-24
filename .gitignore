@@ -141,3 +141,10 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# macOS
+.DS_Store
+
+# Guest photos remain local and private
+data/uploads/*
+!data/uploads/.gitkeep
