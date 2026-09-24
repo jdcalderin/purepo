@@ -8,6 +8,7 @@
   var messages = [];
   var lastPayload = "";
   var page = 0;
+  var cacheKey = "mural-pau-last-messages-v1";
 
   function clear(node) {
     while (node.firstChild) node.removeChild(node.firstChild);
@@ -75,6 +76,31 @@
     }
   }
 
+  function restoreSavedMural() {
+    var saved;
+    try {
+      saved = window.localStorage.getItem(cacheKey);
+      if (!saved) return;
+      messages = JSON.parse(saved);
+      if (Object.prototype.toString.call(messages) !== "[object Array]") {
+        messages = [];
+        return;
+      }
+      lastPayload = saved;
+      render();
+    } catch (ignore) {
+      messages = [];
+    }
+  }
+
+  function saveMural(payload) {
+    try {
+      window.localStorage.setItem(cacheKey, payload);
+    } catch (ignore) {
+      // El mural sigue funcionando incluso si el TV no permite almacenamiento local.
+    }
+  }
+
   function loadMessages() {
     var request = new XMLHttpRequest();
     request.open("GET", "/api/messages?updated=" + new Date().getTime(), true);
@@ -85,8 +111,12 @@
       try {
         payload = request.responseText;
         if (payload !== lastPayload) {
-          messages = JSON.parse(payload);
+          var received = JSON.parse(payload);
+          // Si hay una respuesta temporalmente vacía, no borra el mural ya visible.
+          if (!received.length && messages.length) return;
+          messages = received;
           lastPayload = payload;
+          saveMural(payload);
           render();
         }
       } catch (ignore) {
@@ -96,6 +126,8 @@
     request.send(null);
   }
 
+  // Muestra el último mural inmediatamente y luego lo sincroniza en segundo plano.
+  restoreSavedMural();
   loadMessages();
   window.setInterval(function () {
     loadMessages();
