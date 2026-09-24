@@ -7,10 +7,14 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
+    "build": "node scripts/generate-qr.mjs",
+    "postinstall": "node scripts/generate-qr.mjs",
     "check": "node --check server.js && node --check worker.js && node --check public/app.js"
   },
   "engines": {
     "node": ">=20"
   },
-  "dependencies": {}
+  "dependencies": {
+    "qrcode": "^1.5.4"
+  }
 }

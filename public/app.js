@@ -28,7 +28,7 @@ let participationUrl = "https://purepo.jdcalderin.workers.dev/?modo=participar";
 if (isGuestView) document.title = "Deja un mensaje para Pau";
 
 function setQrSources() {
-  const source = `https://api.qrserver.com/v1/create-qr-code/?size=700x700&color=32134b&bgcolor=ffffff&margin=12&data=${encodeURIComponent(participationUrl)}`;
+  const source = "/images/pau-qr.png";
   const displayQrImage = document.querySelector("#displayQrImage");
   const displayQr = document.querySelector(".display-qr");
   displayQrImage.onload = () => displayQr.classList.remove("qr-unavailable");
@@ -188,6 +188,9 @@ form.addEventListener("submit", async (event) => {
     photoPreview.hidden = true;
     photoLabel.textContent = "Sumar una foto";
     status.textContent = "¡Listo! Tu cariño ya hace parte del mural ♥";
+    document.body.classList.remove("celebrating");
+    void document.body.offsetWidth;
+    document.body.classList.add("celebrating");
     await loadMessages();
     setTimeout(() => document.querySelector("#mural").scrollIntoView({ behavior: "smooth" }), 450);
   } catch (error) {
@@ -214,6 +217,10 @@ for (const dialog of [qrDialog, lightbox]) {
     if (event.target === dialog) dialog.close();
   });
 }
+
+document.body.addEventListener("animationend", (event) => {
+  if (event.animationName === "celebration-flash") document.body.classList.remove("celebrating");
+});
 
 async function loadConfig() {
   try {
