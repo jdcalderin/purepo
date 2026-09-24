@@ -28,14 +28,28 @@ async function readMessages(env) {
   return (await env.MESSAGES.get("messages", "json")) || [];
 }
 
+function publicMessage(message) {
+  return {
+    id: message.id,
+    author: message.author,
+    message: message.message,
+    photoUrl: message.photoUrl,
+    createdAt: message.createdAt
+  };
+}
+
 async function handleCreateMessage(request, env) {
   const form = await request.formData();
   const author = String(form.get("author") || "").trim();
   const messageText = String(form.get("message") || "").trim();
+  const originId = String(form.get("originId") || "").trim();
   const photo = form.get("photo");
 
   if (!author || !messageText || author.length > 50 || messageText.length > 600) {
     return json({ error: "Completa tu nombre y un mensaje de hasta 600 caracteres." }, 400);
+  }
+  if (originId && !/^[a-z0-9][a-z0-9-]{7,79}$/i.test(originId)) {
+    return json({ error: "No pudimos validar el origen del mensaje. Intenta de nuevo." }, 400);
   }
 
   let photoUrl = null;
@@ -57,13 +71,15 @@ async function handleCreateMessage(request, env) {
     author,
     message: messageText,
     photoUrl,
+    // Identificador aleatorio del navegador; no contiene teléfono ni nombre del equipo.
+    originId: originId || null,
     createdAt: new Date().toISOString()
   };
 
   const messages = await readMessages(env);
   messages.unshift(message);
   await env.MESSAGES.put("messages", JSON.stringify(messages));
-  return json(message, 201);
+  return json(publicMessage(message), 201);
 }
 
 async function handlePhoto(request, env, pathname) {
@@ -85,7 +101,7 @@ export default {
 
     try {
       if (url.pathname === "/api/messages") {
-        if (request.method === "GET") return json(await readMessages(env));
+        if (request.method === "GET") return json((await readMessages(env)).map(publicMessage));
         if (request.method === "POST") return handleCreateMessage(request, env);
         return json({ error: "Método no permitido." }, 405);
       }

@@ -44,6 +44,16 @@ async function readMessages() {
   }
 }
 
+function publicMessage(message) {
+  return {
+    id: message.id,
+    author: message.author,
+    message: message.message,
+    photoUrl: message.photoUrl,
+    createdAt: message.createdAt
+  };
+}
+
 function saveMessage(message) {
   writeQueue = writeQueue.then(async () => {
     const messages = await readMessages();
@@ -132,8 +142,12 @@ async function createMessage(request, response) {
   const { fields, photo } = parseMultipart(await collectBody(request), boundary);
   const author = String(fields.author || "").trim();
   const messageText = String(fields.message || "").trim();
+  const originId = String(fields.originId || "").trim();
   if (!author || !messageText || author.length > 50 || messageText.length > 600) {
     return json(response, 400, { error: "Completa tu nombre y un mensaje de hasta 600 caracteres." });
+  }
+  if (originId && !/^[a-z0-9][a-z0-9-]{7,79}$/i.test(originId)) {
+    return json(response, 400, { error: "No pudimos validar el origen del mensaje. Intenta de nuevo." });
   }
 
   let photoFilename = null;
@@ -154,12 +168,14 @@ async function createMessage(request, response) {
     author,
     message: messageText,
     photoUrl: photoFilename ? `/uploads/${photoFilename}` : null,
+    // Identificador aleatorio del navegador; no contiene teléfono ni nombre del equipo.
+    originId: originId || null,
     createdAt: new Date().toISOString()
   };
 
   try {
     await saveMessage(message);
-    json(response, 201, message);
+    json(response, 201, publicMessage(message));
   } catch (error) {
     if (photoFilename) await fs.unlink(path.join(UPLOAD_DIR, photoFilename)).catch(() => {});
     throw error;
@@ -193,7 +209,7 @@ const server = http.createServer(async (request, response) => {
   try {
     const url = new URL(request.url, `http://${request.headers.host || "localhost"}`);
     const pathname = decodeURIComponent(url.pathname);
-    if (request.method === "GET" && pathname === "/api/messages") return json(response, 200, await readMessages());
+    if (request.method === "GET" && pathname === "/api/messages") return json(response, 200, (await readMessages()).map(publicMessage));
     if (request.method === "POST" && pathname === "/api/messages") return await createMessage(request, response);
     if (request.method === "GET") return await serveFile(response, pathname);
     json(response, 405, { error: "Método no permitido." });

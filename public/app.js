@@ -24,8 +24,22 @@ let currentMessages = [];
 let tvPage = 0;
 const isGuestView = document.documentElement.dataset.view === "guest";
 let participationUrl = "https://purepo.jdcalderin.workers.dev/?modo=participar";
+const ORIGIN_STORAGE_KEY = "mural-pau-origin-id-v1";
 
 if (isGuestView) document.title = "Deja un mensaje para Pau";
+
+function originId() {
+  try {
+    const stored = localStorage.getItem(ORIGIN_STORAGE_KEY);
+    if (stored) return stored;
+    const random = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    const id = `device-${random}`.slice(0, 80);
+    localStorage.setItem(ORIGIN_STORAGE_KEY, id);
+    return id;
+  } catch {
+    return "";
+  }
+}
 
 function setQrSources() {
   const source = "/images/pau-qr.png";
@@ -183,7 +197,9 @@ form.addEventListener("submit", async (event) => {
   status.textContent = "Guardando tu recuerdo…";
 
   try {
-    const response = await fetch("/api/messages", { method: "POST", body: new FormData(form) });
+    const payload = new FormData(form);
+    payload.set("originId", originId());
+    const response = await fetch("/api/messages", { method: "POST", body: payload });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(result.error || "No pudimos guardar tu mensaje. Revisa tu conexión e inténtalo otra vez.");
     form.reset();
