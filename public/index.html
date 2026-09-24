@@ -6,7 +6,12 @@
     <meta name="theme-color" content="#32134b" />
     <meta name="description" content="Mural de cumpleaños de Pau: mensajes, recuerdos y fotos de quienes la quieren." />
     <title>Para Pau, con cariño</title>
-    <script>document.documentElement.dataset.view = location.pathname.startsWith('/participar') || new URLSearchParams(location.search).get('modo') === 'participar' ? 'guest' : 'display';</script>
+    <script>
+      (function () {
+        var isGuest = location.pathname.indexOf('/participar') === 0 || /(?:^|[?&])modo=participar(?:&|$)/.test(location.search);
+        document.documentElement.setAttribute('data-view', isGuest ? 'guest' : 'display');
+      }());
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
@@ -159,6 +164,14 @@
       </article>
     </template>
 
-    <script type="module" src="/app.js"></script>
+    <script>
+      (function () {
+        var script = document.createElement('script');
+        var isGuest = document.documentElement.getAttribute('data-view') === 'guest';
+        script.src = isGuest ? '/app.js' : '/display.js';
+        if (isGuest) script.type = 'module';
+        document.body.appendChild(script);
+      }());
+    </script>
   </body>
 </html>
