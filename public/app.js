@@ -29,7 +29,14 @@ if (isGuestView) document.title = "Deja un mensaje para Pau";
 
 function setQrSources() {
   const source = `https://api.qrserver.com/v1/create-qr-code/?size=700x700&color=32134b&bgcolor=ffffff&margin=12&data=${encodeURIComponent(participationUrl)}`;
-  document.querySelector("#displayQrImage").src = source;
+  const displayQrImage = document.querySelector("#displayQrImage");
+  const displayQr = document.querySelector(".display-qr");
+  displayQrImage.onload = () => displayQr.classList.remove("qr-unavailable");
+  displayQrImage.onerror = () => displayQr.classList.add("qr-unavailable");
+  displayQrImage.src = source;
+  const qrLink = document.querySelector("#displayQrLink");
+  qrLink.href = participationUrl;
+  qrLink.textContent = new URL(participationUrl).hostname;
   qrImage.src = source;
 }
 

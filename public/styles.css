@@ -35,7 +35,7 @@ html[data-view="display"] .display-qr {
   z-index: 30;
   top: 18px;
   right: 22px;
-  width: 150px;
+  width: 220px;
   display: block;
   padding: 10px;
   border-radius: 18px;
@@ -43,17 +43,20 @@ html[data-view="display"] .display-qr {
   box-shadow: 0 15px 45px rgba(31,8,49,.20);
   text-align: center;
 }
-.display-qr-code { padding: 4px; background: white; border-radius: 10px; }
+.display-qr-code { padding: 5px; background: white; border-radius: 12px; }
 .display-qr-code img { width: 100%; aspect-ratio: 1; }
-.display-qr span { display: block; margin-top: 5px; color: var(--pink); text-transform: uppercase; letter-spacing: .1em; font-size: .55rem; font-weight: 800; }
-.display-qr strong { display: block; color: var(--plum); font-family: "Fraunces", serif; font-size: .78rem; line-height: 1.12; }
+.display-qr span { display: block; margin-top: 7px; color: var(--pink); text-transform: uppercase; letter-spacing: .1em; font-size: .66rem; font-weight: 800; }
+.display-qr strong { display: block; color: var(--plum); font-family: "Fraunces", serif; font-size: 1rem; line-height: 1.12; }
+.qr-fallback { display: block; margin-top: 7px; color: var(--plum); font-size: .66rem; font-weight: 700; overflow-wrap: anywhere; }
+.display-qr.qr-unavailable .display-qr-code { display: none; }
+.display-qr.qr-unavailable { padding: 18px 14px; }
 
 .tv-stage { display: none; }
 html[data-view="display"] body { height: 100svh; overflow: hidden; }
 html[data-view="display"] main,
 html[data-view="display"] footer { display: none; }
 html[data-view="display"] .tv-stage {
-  width: calc(100% - 190px);
+  width: calc(100% - 260px);
   height: calc(100svh - 76px);
   margin-left: 28px;
   padding: 2px 0 22px;
@@ -110,7 +113,7 @@ h1 em { color: var(--pink); font-style: italic; }
 .tv-highlights .tv-empty { grid-column: 1 / -1; color: var(--muted); text-align: center; }
 
 @media (min-width: 861px) {
-  html[data-view="display"] .topbar { width: calc(100% - 190px); margin-left: 28px; }
+  html[data-view="display"] .topbar { width: calc(100% - 260px); margin-left: 28px; }
 }
 
 .message-form { padding: 26px; background: rgba(255,255,255,.78); border: 1px solid rgba(50,19,75,.09); border-radius: 24px; box-shadow: 0 22px 65px rgba(57, 22, 76, .10); backdrop-filter: blur(14px); }
@@ -201,8 +204,7 @@ dialog::backdrop { background: rgba(23,7,35,.74); backdrop-filter: blur(8px); }
   .collage { grid-auto-rows: 55px; }
   .collage-item, .collage-item:nth-child(n) { grid-column: span 6; grid-row: span 4; }
   .collage-item:nth-child(3n + 1) { grid-column: span 12; grid-row: span 6; }
-  html[data-view="display"] .display-qr { top: auto; right: 14px; bottom: 14px; width: 116px; padding: 7px; border-radius: 14px; }
-  html[data-view="display"] .display-qr > div:last-child { display: none; }
+  html[data-view="display"] .display-qr { top: auto; right: 14px; bottom: 14px; width: 180px; padding: 9px; border-radius: 16px; }
   html[data-view="display"] body { height: auto; overflow: auto; }
   html[data-view="display"] .tv-stage { width: min(100% - 28px, 600px); height: auto; min-height: calc(100svh - 66px); margin: 0 auto; padding-bottom: 70px; grid-template-columns: 1fr; }
   html[data-view="display"] .tv-celebration { text-align: center; }
