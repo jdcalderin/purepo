@@ -50,6 +50,11 @@ html[data-view="display"] .display-qr {
 .qr-fallback { display: block; margin-top: 7px; color: var(--plum); font-size: .66rem; font-weight: 700; overflow-wrap: anywhere; }
 .display-qr.qr-unavailable .display-qr-code { display: none; }
 .display-qr.qr-unavailable { padding: 18px 14px; }
+.print-button { width: 100%; margin-top: 12px; padding: 10px 8px; border: 0; border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 7px; color: white; background: var(--pink); font-size: .72rem; font-weight: 800; cursor: pointer; box-shadow: 0 8px 18px rgba(237,63,118,.22); }
+.print-button:hover { background: #da2f67; transform: translateY(-1px); }
+.print-button svg { width: 16px; height: 16px; fill: currentColor; }
+
+.print-mural { display: none; }
 
 .tv-stage { display: none; }
 html[data-view="display"] body { height: 100svh; overflow: hidden; }
@@ -256,4 +261,28 @@ body.celebrating::before { content: "✦  ♥  ✦  ♥  ✦"; position: fixed; 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+}
+
+@media print {
+  @page { size: A4; margin: 14mm; }
+
+  html, body { background: white !important; color: #32134b !important; }
+  body > * { display: none !important; }
+  body > .print-mural { display: block !important; }
+  .print-mural { font-family: "DM Sans", Arial, sans-serif; }
+  .print-header { padding-bottom: 18px; border-bottom: 2px solid #ed3f76; margin-bottom: 22px; }
+  .print-header .eyebrow { margin-bottom: 6px; }
+  .print-header h1 { margin: 0 0 6px; color: #32134b; font-size: 31pt; }
+  .print-header p:last-child { margin: 0; color: #6e6174; font-size: 10pt; }
+  .print-mural section { margin-bottom: 24px; }
+  .print-mural h2 { margin: 0 0 12px; color: #32134b; font-family: "Fraunces", Georgia, serif; font-size: 19pt; }
+  .print-messages { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .print-message { break-inside: avoid; padding: 13px 15px; border: 1px solid #eadfe7; border-radius: 4px 14px 14px 14px; background: #fff8fb; }
+  .print-message p { margin: 0 0 10px; color: #3a2641; font-family: "Caveat", cursive; font-size: 16pt; line-height: 1.15; }
+  .print-message strong { color: #6b1743; font-size: 8.5pt; }
+  .print-message .emoji-icon { width: .9em; height: .9em; }
+  .print-collage { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .print-photo { break-inside: avoid; margin: 0; }
+  .print-photo img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 9px; }
+  .print-photo figcaption { margin-top: 4px; color: #6e6174; font-size: 7.5pt; }
 }

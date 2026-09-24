@@ -5,6 +5,8 @@
   var collageNode = document.getElementById("tvCollage");
   var photoCountNode = document.getElementById("tvPhotoCount");
   var emptyCollageNode = document.getElementById("tvCollageEmpty");
+  var printMessagesNode = document.getElementById("printMessages");
+  var printCollageNode = document.getElementById("printCollage");
   var messages = [];
   var lastPayload = "";
   var page = 0;
@@ -111,6 +113,42 @@
     collageNode.appendChild(frame);
   }
 
+  function renderPrintMural() {
+    var i;
+    var card;
+    var body;
+    var author;
+    var frame;
+    var image;
+
+    clear(printMessagesNode);
+    clear(printCollageNode);
+    for (i = 0; i < messages.length; i += 1) {
+      card = document.createElement("article");
+      card.className = "print-message";
+      body = document.createElement("p");
+      author = document.createElement("strong");
+      richText(body, "“" + messages[i].message + "”");
+      richText(author, "— " + messages[i].author);
+      card.appendChild(body);
+      card.appendChild(author);
+      printMessagesNode.appendChild(card);
+
+      if (messages[i].photoUrl) {
+        frame = document.createElement("figure");
+        frame.className = "print-photo";
+        image = document.createElement("img");
+        image.src = messages[i].photoUrl;
+        image.alt = "Recuerdo compartido por " + messages[i].author;
+        frame.appendChild(image);
+        var caption = document.createElement("figcaption");
+        text(caption, messages[i].author);
+        frame.appendChild(caption);
+        printCollageNode.appendChild(frame);
+      }
+    }
+  }
+
   function render() {
     var photos = [];
     var i;
@@ -119,6 +157,7 @@
 
     clear(messagesNode);
     clear(collageNode);
+    renderPrintMural();
 
     for (i = 0; i < messages.length; i += 1) {
       if (messages[i].photoUrl) photos.push(messages[i]);
@@ -208,6 +247,9 @@
   // Muestra el último mural inmediatamente y luego lo sincroniza en segundo plano.
   restoreSavedMural();
   loadMessages();
+  document.getElementById("printMuralButton").addEventListener("click", function () {
+    window.print();
+  });
   window.setInterval(function () {
     loadMessages();
     if (messages.length) {
