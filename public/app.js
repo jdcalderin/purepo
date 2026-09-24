@@ -174,8 +174,8 @@ form.addEventListener("submit", async (event) => {
 
   try {
     const response = await fetch("/api/messages", { method: "POST", body: new FormData(form) });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || "No pudimos guardar tu mensaje.");
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.error || "No pudimos guardar tu mensaje. Revisa tu conexión e inténtalo otra vez.");
     form.reset();
     charCount.textContent = "0 / 600";
     photoPreview.hidden = true;
